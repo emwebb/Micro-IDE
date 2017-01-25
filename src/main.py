@@ -4,6 +4,7 @@ import tkFileDialog
 import ScrolledText
 import pygments
 from pygments import lexers
+from subprocess import call
 
 class MicroIDE(Frame):
     CODE_AREA = None
@@ -109,8 +110,8 @@ class MicroIDE(Frame):
                                     foreground="#ff00ff")
 
     def createWidgets(self) :
-        self.CODE_AREA = ScrolledText.ScrolledText(self)
-        self.CODE_AREA.pack(expand=True, fill="both")
+        self.CODE_AREA = ScrolledText.ScrolledText(root)
+        self.CODE_AREA.pack(fill=BOTH,expand=True)
         self.setSyntexColours()
         
         self.CODE_AREA.configure(bg = "#555555")
@@ -130,6 +131,11 @@ class MicroIDE(Frame):
         filemenu.add_separator()
         self.MENU.add_cascade(label="File", menu=filemenu)
 
+        debugmenu = Menu(self.MENU, tearoff=0)
+
+        debugmenu.add_command(label="Run", command=self.runFile)
+        self.MENU.add_cascade(label="Debug", menu=debugmenu)
+
         root.bind("<Control-s>",self.saveFile)
         root.bind("<Control-n>",self.newFile)
         root.bind("<Control-o>",self.openFile)
@@ -137,9 +143,14 @@ class MicroIDE(Frame):
         self.bind("<Configure>", self.on_resize)
         root.config(menu=self.MENU)
         self.updateTitle()
-        
+    
+    def runFile(self, event=None) :
+        if not self.FilePath == None :
+            call(["open","-a","Terminal",self.FilePath])
+
     def on_resize(self, event=None) :
         pass
+
 
 
     def highlight(self,event=None):
